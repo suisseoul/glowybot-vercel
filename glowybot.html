@@ -129,6 +129,9 @@
       appendMessage('user', userMessage);
       chatInput.value = '';
 
+      const userLang = navigator.language.slice(0, 2); // ej. "es", "en", "fr"
+      const lang = ['es', 'en', 'fr'].includes(userLang) ? userLang : 'es';
+
       try {
         const response = await fetch('https://glowybot-vercel.vercel.app/glowybot', {
           method: 'POST',
@@ -137,7 +140,7 @@
           },
           body: JSON.stringify({
             message: userMessage,
-            lang: 'es'
+            lang: lang
           })
         });
 
