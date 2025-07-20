@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GlowyBot 🌸</title>
   <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+
     #chat-toggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background-color: #ffb6c1;
+      background-color: #ff69b4;
       border: none;
       border-radius: 50%;
       width: 60px;
@@ -17,30 +22,59 @@
       font-size: 30px;
       color: white;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 9999;
     }
 
     #chat-box {
       position: fixed;
       bottom: 90px;
       right: 20px;
-      width: 320px;
+      width: 350px;
       max-height: 500px;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       display: none;
       flex-direction: column;
       overflow: hidden;
-      font-family: sans-serif;
+      z-index: 9998;
+    }
+
+    #chat-header {
+      background-color: #ff69b4;
+      color: white;
+      padding: 12px;
+      font-weight: bold;
+      text-align: center;
     }
 
     #chat-messages {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
-      font-size: 14px;
+      background-color: #fdfdfd;
+    }
+
+    .message {
+      margin: 8px 0;
+      padding: 10px 14px;
+      border-radius: 16px;
+      max-width: 80%;
+      word-wrap: break-word;
+      line-height: 1.4;
+    }
+
+    .user {
+      align-self: flex-end;
+      background-color: #e0f7fa;
+      margin-left: auto;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background-color: #ffe0f0;
+      margin-right: auto;
     }
 
     #chat-form {
@@ -51,15 +85,16 @@
     #chat-input {
       flex: 1;
       border: none;
-      padding: 10px;
+      padding: 12px;
       font-size: 14px;
+      outline: none;
     }
 
     #chat-send {
       background-color: #ff69b4;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 0 16px;
       cursor: pointer;
     }
   </style>
@@ -69,6 +104,7 @@
   <button id="chat-toggle">🌸</button>
 
   <div id="chat-box">
+    <div id="chat-header">GlowyBot 🌸</div>
     <div id="chat-messages"></div>
     <form id="chat-form">
       <input id="chat-input" type="text" placeholder="Escribe a GlowyBot..." required />
@@ -90,11 +126,11 @@
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const userMessage = chatInput.value;
-      appendMessage('Tú', userMessage);
+      appendMessage('user', userMessage);
       chatInput.value = '';
 
       try {
-       const response = await fetch('https://glowybot-vercel.vercel.app/glowybot', {
+        const response = await fetch('https://glowybot-vercel.vercel.app/glowybot', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -106,15 +142,16 @@
         });
 
         const data = await response.json();
-        appendMessage('GlowyBot 🌸', data.reply);
+        appendMessage('bot', data.reply);
       } catch (err) {
-        appendMessage('Error', 'Lo siento, hubo un problema de conexión.');
+        appendMessage('bot', 'Ups... hubo un problema al conectarme.');
       }
     });
 
-    function appendMessage(sender, text) {
+    function appendMessage(type, text) {
       const div = document.createElement('div');
-      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      div.className = `message ${type}`;
+      div.textContent = text;
       chatMessages.appendChild(div);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
